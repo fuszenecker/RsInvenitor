@@ -4,12 +4,9 @@ use std::error::{ Error };
 use std::fs;
 use std::cmp::{ min };
 
-fn compare_strings(text: &Vec<char>, string: &String, offset: &usize, step: &usize) -> bool {
+fn compare_strings(text: &Vec<char>, string: &String, offset: usize, step: usize) -> bool {
     for (index, ch) in string.chars().enumerate() {
-
         if offset + index * step >= text.len() {
-            println!("ERROR: O: {}, I: {}, S: {}", offset, index, step);
-            println!("G: {}", (text.len() - offset - 1) / (string.len() - 1));
             return false
         } else {
             let fch = text[offset + index * step];
@@ -24,20 +21,15 @@ fn compare_strings(text: &Vec<char>, string: &String, offset: &usize, step: &usi
 }
 
 fn find_string(text: &String, string: &String, max_step: usize) -> Vec<(usize, usize)> {
-    let length = text.len();
-    let mut findings: Vec<(usize, usize)> = Vec::new();
     let chars: Vec<char> = text.chars().collect();
+    let length = chars.len();
+    let mut findings: Vec<(usize, usize)> = Vec::new();
 
     for offset in 0..length {
-        let step_limit = min((length - offset - 1) / (string.len() - 1), max_step);
-        // let step_limit = (length - offset - 1) / (string.len() - 1);
+        let step_max = min((length - offset - 1) / (string.len() - 1), max_step);
 
-        for step in 1 ..= step_limit {
-            if step > (length - offset - 1) / (string.len() - 1) {
-                println!("X: {} {} {}", step, step_limit, (length - offset - 1) / (string.len() - 1));
-            }
-
-            if compare_strings(&chars, string, &offset, &step) {
+        for step in 1..=step_max {
+            if compare_strings(&chars, string, offset, step) {
                 findings.push((offset, step));
             }
         }
@@ -51,23 +43,28 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     if args.len() >= 3 {
         let file_name = &args[1];
-        let string = &args[2];
         let mut max_step = usize::max_value();
 
         if args.len() == 4 {
             max_step = usize::from_str_radix(&args[3], 10)?;
         }
 
-        println!("In documento nomine \"{}\" textum \"{}\" invenio, gradus maximus est {}.", file_name, string, max_step);
 
         let text: String = fs::read_to_string(file_name)
-            .expect("Documentum nomine invenire non possum.")
-            .chars()
-            .filter(|ch| { ch.is_alphabetic() })
-            .collect();
+        .expect("Documentum nomine invenire non possum.")
+        .chars()
+        .filter(|ch| { ch.is_alphabetic() })
+        .collect();
 
         let uppercase_text: String = text.to_uppercase();
+
+        let string: String = args[2]
+        .chars()
+        .filter(|ch| { ch.is_alphabetic() })
+        .collect();
+
         let uppercase_string: String = string.to_uppercase();
+        println!("In documento nomine \"{}\" textum \"{}\" invenio, gradus maximus est {}.", file_name, uppercase_string, max_step);
 
         let findings = find_string(&uppercase_text, &uppercase_string, max_step);
 
@@ -124,5 +121,10 @@ mod tests {
     #[test]
     fn find_strings_toolong() {
         assert_eq!(0, find_string(&String::from("BBACACA"), &String::from("AAABBB"), 100).len());
+    }
+
+    #[test]
+    fn min_1() {
+        assert_eq!(5, min(10, 5));
     }
 }
