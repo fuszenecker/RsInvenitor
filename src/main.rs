@@ -2,28 +2,42 @@ use std::env;
 use std::result::{ Result };
 use std::error::{ Error };
 use std::fs;
+use std::cmp::{ min };
 
-fn compare_strings(text: &String, string: &String, offset: usize, step: usize) -> bool {
+fn compare_strings(text: &Vec<char>, string: &String, offset: &usize, step: &usize) -> bool {
     for (index, ch) in string.chars().enumerate() {
-        let fch = text.chars().nth(offset + index * step).unwrap();
 
-        if ch != fch {
+        if offset + index * step >= text.len() {
+            println!("ERROR: O: {}, I: {}, S: {}", offset, index, step);
+            println!("G: {}", (text.len() - offset - 1) / (string.len() - 1));
             return false
+        } else {
+            let fch = text[offset + index * step];
+
+            if ch != fch {
+                return false
+            }
         }
     }
 
     true
 }
 
-fn find_string(text: &String, string: &String) -> Vec<(usize, usize)> {
+fn find_string(text: &String, string: &String, max_step: usize) -> Vec<(usize, usize)> {
     let length = text.len();
     let mut findings: Vec<(usize, usize)> = Vec::new();
+    let chars: Vec<char> = text.chars().collect();
 
     for offset in 0..length {
-        let max_step = (length - offset - 1) / (string.len() - 1);
+        let step_limit = min((length - offset - 1) / (string.len() - 1), max_step);
+        // let step_limit = (length - offset - 1) / (string.len() - 1);
 
-        for step in 1 ..= max_step {
-            if compare_strings(text, string, offset, step) {
+        for step in 1 ..= step_limit {
+            if step > (length - offset - 1) / (string.len() - 1) {
+                println!("X: {} {} {}", step, step_limit, (length - offset - 1) / (string.len() - 1));
+            }
+
+            if compare_strings(&chars, string, &offset, &step) {
                 findings.push((offset, step));
             }
         }
@@ -35,11 +49,16 @@ fn find_string(text: &String, string: &String) -> Vec<(usize, usize)> {
 fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
 
-    if args.len() == 3 {
+    if args.len() >= 3 {
         let file_name = &args[1];
         let string = &args[2];
+        let mut max_step = usize::max_value();
 
-        println!("In documento nomine \"{}\" textum \"{}\" invenio.", file_name, string);
+        if args.len() == 4 {
+            max_step = usize::from_str_radix(&args[3], 10)?;
+        }
+
+        println!("In documento nomine \"{}\" textum \"{}\" invenio, gradus maximus est {}.", file_name, string, max_step);
 
         let text: String = fs::read_to_string(file_name)
             .expect("Documentum nomine invenire non possum.")
@@ -50,7 +69,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let uppercase_text: String = text.to_uppercase();
         let uppercase_string: String = string.to_uppercase();
 
-        let findings = find_string(&uppercase_text, &uppercase_string);
+        let findings = find_string(&uppercase_text, &uppercase_string, max_step);
 
         for (offset, step) in findings {
             println!("Distantia: {}, gradus: {}.", offset, step);
@@ -69,41 +88,41 @@ mod tests {
 
     #[test]
     fn compare_strings_trivial() {
-        assert_eq!(true, compare_strings(&String::from("AAABBBCCC"), &String::from("AAA"), 0, 1));
+        assert_eq!(true, compare_strings(&String::from("AAABBBCCC").chars().collect(), &String::from("AAA"), 0, 1));
     }
 
     #[test]
     fn compare_strings_should_fail() {
-        assert_eq!(false, compare_strings(&String::from("AAABBBCCC"), &String::from("AAB"), 0, 1));
+        assert_eq!(false, compare_strings(&String::from("AAABBBCCC").chars().collect(), &String::from("AAB"), 0, 1));
     }
 
     #[test]
     fn compare_strings_offset() {
-        assert_eq!(true, compare_strings(&String::from("AAABBBCCC"), &String::from("AAB"), 1, 1));
+        assert_eq!(true, compare_strings(&String::from("AAABBBCCC").chars().collect(), &String::from("AAB"), 1, 1));
     }
 
     #[test]
     fn compare_strings_distant() {
-        assert_eq!(true, compare_strings(&String::from("ALMAFA"), &String::from("AA"), 3, 2));
+        assert_eq!(true, compare_strings(&String::from("ALMAFA").chars().collect(), &String::from("AA"), 3, 2));
     }
 
     #[test]
     fn find_strings_trivial() {
-        assert_eq!(vec![(0,1)], find_string(&String::from("AAA"), &String::from("AAA")));
+        assert_eq!(vec![(0,1)], find_string(&String::from("AAA"), &String::from("AAA"), 100));
     }
 
     #[test]
     fn find_strings_with_offset() {
-        assert_eq!(vec![(2,1)], find_string(&String::from("BBAAA"), &String::from("AAA")));
+        assert_eq!(vec![(2,1)], find_string(&String::from("BBAAA"), &String::from("AAA"), 100));
     }
 
     #[test]
     fn find_strings_with_offset_and_step() {
-        assert_eq!(vec![(2,2)], find_string(&String::from("BBACACA"), &String::from("AAA")));
+        assert_eq!(vec![(2,2)], find_string(&String::from("BBACACA"), &String::from("AAA"), 100));
     }
 
     #[test]
     fn find_strings_toolong() {
-        assert_eq!(0, find_string(&String::from("BBACACA"), &String::from("AAABBB")).len());
+        assert_eq!(0, find_string(&String::from("BBACACA"), &String::from("AAABBB"), 100).len());
     }
 }
