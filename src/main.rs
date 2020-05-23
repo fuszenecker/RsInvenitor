@@ -41,10 +41,16 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         println!("In documento nomine \"{}\" textum \"{}\" invenio.", file_name, string);
 
-        let text = fs::read_to_string(file_name)
-            .expect("Documentum nomine invenire non possum.");
+        let text: String = fs::read_to_string(file_name)
+            .expect("Documentum nomine invenire non possum.")
+            .chars()
+            .filter(|ch| { ch.is_alphabetic() })
+            .collect();
 
-        let findings = find_string(&text, &string);
+        let uppercase_text: String = text.to_uppercase();
+        let uppercase_string: String = string.to_uppercase();
+
+        let findings = find_string(&uppercase_text, &uppercase_string);
 
         for (offset, step) in findings {
             println!("Distantia: {}, gradus: {}.", offset, step);
