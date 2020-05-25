@@ -3,6 +3,7 @@ use std::result::{ Result };
 use std::error::{ Error };
 use std::fs;
 use std::cmp::{ min };
+use std::path::{ Path };
 
 fn compare_strings(text: &Vec<char>, string: &String, offset: usize, step: usize) -> bool {
     for (index, ch) in string.chars().enumerate() {
@@ -49,7 +50,6 @@ fn main() -> Result<(), Box<dyn Error>> {
             max_step = usize::from_str_radix(&args[3], 10)?;
         }
 
-
         let text: String = fs::read_to_string(file_name)
         .expect("Documentum nomine invenire non possum.")
         .chars()
@@ -62,6 +62,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         .chars()
         .filter(|ch| { ch.is_alphabetic() })
         .collect();
+
+        let mut output_file_name = String::from(file_name);
+        output_file_name.push_str(".p");
+        fs::write(output_file_name, uppercase_text.as_bytes())?;
 
         let uppercase_string: String = string.to_uppercase();
         println!("In documento nomine \"{}\" textum \"{}\" invenio, gradus maximus est {}.", file_name, uppercase_string, max_step);
