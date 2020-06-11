@@ -1,6 +1,5 @@
 use std::cmp::min;
 
-
 fn compare_strings(text: &Vec<char>, string: &String, offset: usize, step: usize) -> bool {
     for (index, ch) in string.chars().enumerate() {
         if offset + index * step >= text.len() {
