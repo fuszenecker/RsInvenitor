@@ -3,7 +3,6 @@ use std::result::{ Result };
 use std::error::{ Error };
 use std::fs;
 use std::cmp::{ min };
-use std::path::{ Path };
 
 fn compare_strings(text: &Vec<char>, string: &String, offset: usize, step: usize) -> bool {
     for (index, ch) in string.chars().enumerate() {
@@ -70,7 +69,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         let uppercase_string: String = string.to_uppercase();
         println!("In documento nomine \"{}\" textum \"{}\" invenio, gradus maximus est {}.", file_name, uppercase_string, max_step);
 
-        let findings = find_string(&uppercase_text, &uppercase_string, max_step);
+        let mut findings = find_string(&uppercase_text, &uppercase_string, max_step);
+
+        findings.sort_by_key(|&(_, c)| c);
 
         for (offset, step) in findings {
             println!("Distantia: {}, gradus: {}.", offset, step);
