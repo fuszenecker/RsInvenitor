@@ -1,0 +1,9 @@
+[package]
+name = "invenitor-bin"
+version = "0.1.0"
+authors = ["Fuszenecker Róbert <robert.fuszenecker@outlook.com>"]
+edition = "2018"
+
+[dependencies]
+invenitor = { path = "../invenitor" }
+
