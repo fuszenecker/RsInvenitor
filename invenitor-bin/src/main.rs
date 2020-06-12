@@ -3,18 +3,17 @@ use std::error::Error;
 use std::fs;
 use std::result::Result;
 
-use invenitor;
-
 fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
 
     if args.len() >= 3 {
         let file_name = &args[1];
-        let mut max_step = usize::max_value();
 
-        if args.len() == 4 {
-            max_step = usize::from_str_radix(&args[3], 10)?;
-        }
+        let max_step = if args.len() == 4 {
+            usize::from_str_radix(&args[3], 10)?
+        } else {
+            usize::max_value()
+        };
 
         let text: String = fs::read_to_string(file_name)
             .expect("Documentum nomine invenire non possum.")

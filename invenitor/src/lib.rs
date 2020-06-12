@@ -1,6 +1,6 @@
 use std::cmp::min;
 
-fn compare_strings(text: &Vec<char>, string: &String, offset: usize, step: usize) -> bool {
+fn compare_strings(text: &[char], string: &str, offset: usize, step: usize) -> bool {
     for (index, ch) in string.chars().enumerate() {
         if offset + index * step >= text.len() {
             return false;
@@ -16,7 +16,7 @@ fn compare_strings(text: &Vec<char>, string: &String, offset: usize, step: usize
     true
 }
 
-pub fn find_string(text: &String, string: &String, max_step: usize) -> Vec<(usize, usize)> {
+pub fn find_string(text: &str, string: &str, max_step: usize) -> Vec<(usize, usize)> {
     let chars: Vec<char> = text.chars().collect();
     let length = chars.len();
     let mut findings: Vec<(usize, usize)> = Vec::new();
@@ -43,7 +43,7 @@ mod tests {
         assert_eq!(
             true,
             compare_strings(
-                &String::from("AAABBBCCC").chars().collect(),
+                &String::from("AAABBBCCC").chars().collect::<Vec<char>>(),
                 &String::from("AAA"),
                 0,
                 1
@@ -56,7 +56,7 @@ mod tests {
         assert_eq!(
             false,
             compare_strings(
-                &String::from("AAABBBCCC").chars().collect(),
+                &String::from("AAABBBCCC").chars().collect::<Vec<char>>(),
                 &String::from("AAB"),
                 0,
                 1
@@ -69,7 +69,7 @@ mod tests {
         assert_eq!(
             true,
             compare_strings(
-                &String::from("AAABBBCCC").chars().collect(),
+                &String::from("AAABBBCCC").chars().collect::<Vec<char>>(),
                 &String::from("AAB"),
                 1,
                 1
@@ -82,7 +82,7 @@ mod tests {
         assert_eq!(
             true,
             compare_strings(
-                &String::from("ALMAFA").chars().collect(),
+                &String::from("ALMAFA").chars().collect::<Vec<char>>(),
                 &String::from("AA"),
                 3,
                 2
