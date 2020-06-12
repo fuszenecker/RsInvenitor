@@ -1,0 +1,8 @@
+[package]
+name = "invenitor"
+version = "1.0.0"
+authors = ["Róbert Fuszenecker <robert.fuszenecker@betssongroup.com>"]
+edition = "2018"
+
+[dependencies]
+
