@@ -40,7 +40,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         findings.sort_by_key(|&(_, c)| c);
 
         for (offset, step) in findings {
-            println!("Distantia: {}, gradus: {}.", offset, step);
+            println!("Positio: {}, gradus: {}.", offset, step);
         }
 
         Ok(())
