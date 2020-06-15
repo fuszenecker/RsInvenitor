@@ -4,5 +4,5 @@ script:
   - rustup component add clippy
   - cargo clippy
   - cargo test --verbose --all
-  # - cargo install cargo-audit
-  # - cargo audit
+  - cargo install cargo-audit
+  - cargo audit

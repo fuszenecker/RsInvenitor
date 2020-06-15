@@ -16,7 +16,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         };
 
         let text: String = fs::read_to_string(file_name)
-            .expect(&format!("Documentum nomine {} inveniri non potest.", &file_name))
+            .unwrap_or_else(|_| panic!("Documentum nomine {} inveniri non potest.", &file_name))
             .chars()
             .filter(|ch| ch.is_alphabetic())
             .collect();
