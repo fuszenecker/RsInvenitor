@@ -1,0 +1,7 @@
+language: rust
+script:
+  - cargo build --verbose --all
+  - cargo clippy
+  - cargo test --verbose --all
+  # - cargo install cargo-audit
+  # - cargo audit
