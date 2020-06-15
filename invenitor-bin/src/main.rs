@@ -2,7 +2,6 @@ use std::env;
 use std::error::Error;
 use std::fs;
 use std::result::Result;
-use std::fmt;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();

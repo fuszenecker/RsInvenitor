@@ -1,6 +1,7 @@
 language: rust
 script:
   - cargo build --verbose --all
+  - rustup component add clippy
   - cargo clippy
   - cargo test --verbose --all
   # - cargo install cargo-audit
