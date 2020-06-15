@@ -2,6 +2,7 @@ use std::env;
 use std::error::Error;
 use std::fs;
 use std::result::Result;
+use std::fmt;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
@@ -16,7 +17,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         };
 
         let text: String = fs::read_to_string(file_name)
-            .expect("Documentum nomine invenire non possum.")
+            .expect(&format!("Documentum nomine {} inveniri non potest.", &file_name))
             .chars()
             .filter(|ch| ch.is_alphabetic())
             .collect();
